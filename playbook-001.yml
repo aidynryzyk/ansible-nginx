@@ -1,0 +1,21 @@
+---
+- hosts: all
+  become: yes
+
+  tasks:
+    - name: Install Nginx
+      command: amazon-linux-extras install nginx1 -y
+      args:
+        creates: /sbin/nginx
+
+    - name: Apply nginx template
+      template:
+        src: ansible-nginx-demo/files/nginx.conf.j2
+        dest: /etc/nginx/sites-available/default
+      notify: Restart nginx
+
+  handlers:
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
